@@ -31,6 +31,10 @@ public class BPOptimizer {
         f = Integer.parseInt(prop.getProperty("f"));
     }
     
+    /*
+     * Find the optimal plan for given values of p (for function f1 through fn)
+     * Output C-snippet
+     */
     private void findOptimalPlan(Double[] pValues) {
         System.out.println(Arrays.toString(pValues));
     }
