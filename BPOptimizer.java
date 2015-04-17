@@ -12,7 +12,8 @@ public class BPOptimizer {
     private int f;
     
     /*
-     * Read the cost values from the config.txt file
+     * Read the cost values from the config.txt file into our instance
+     * variables
      */
     private void getCostValues(String filename) throws IOException {
         Properties prop = new Properties();
@@ -34,7 +35,5 @@ public class BPOptimizer {
     public static void main(String[] args) throws IOException {
         BPOptimizer optimizer = new BPOptimizer();
         optimizer.getCostValues(args[1]);
-        System.out.println("Cost values are r=" + optimizer.r + ", t=" + optimizer.t + ", l=" + optimizer.l
-                          + ", m=" + optimizer.m + ", a=" + optimizer.a + ", f=" + optimizer.f);
     }
 }
