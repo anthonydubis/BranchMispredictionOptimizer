@@ -1,6 +1,5 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.util.*;
 
 public class BPOptimizer {
@@ -32,8 +31,28 @@ public class BPOptimizer {
         f = Integer.parseInt(prop.getProperty("f"));
     }
     
+    private void findOptimalPlan(Double[] pValues) {
+        System.out.println(Arrays.toString(pValues));
+    }
+    
     public static void main(String[] args) throws IOException {
         BPOptimizer optimizer = new BPOptimizer();
         optimizer.getCostValues(args[1]);
+        
+        // Read the selectivities
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(args[0]));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] splitLine = line.split(" ");
+                Double[] pValues = new Double[splitLine.length];
+                for (int i = 0; i < splitLine.length; i++) {
+                    pValues[i] = Double.parseDouble(splitLine[i]);
+                }
+                optimizer.findOptimalPlan(pValues);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
     }
 }
