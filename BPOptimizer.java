@@ -20,9 +20,7 @@ public class BPOptimizer {
         Record[] A = createSubsetsOfTerms(S, pValues);
         
         considerLogicalAndNoBranchingPlans(A);
-        for (int i = 0; i < A.length; i++) {
-            System.out.println(A[i]);
-        }
+        considerBranchingAndPlans(A);
     }
     
     /*
@@ -76,6 +74,19 @@ public class BPOptimizer {
             } else {
                 subset.c = noBranchCost;
                 subset.b = true;
+            }
+        }
+    }
+    
+    /*
+     * Stage 2 of the Algorithm
+     */
+    private void considerBranchingAndPlans(Record[] subsets) {
+        for (int i = 1; i < subsets.length; i++) {
+            for (int j = 1; j < subsets.length; j++) {
+                if ((i & j) == 0) {
+                    // No intersection
+                }
             }
         }
     }

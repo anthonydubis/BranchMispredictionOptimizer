@@ -5,6 +5,7 @@ public class Record {
     ArrayList<Integer> terms;
     ArrayList<Double> selectivities;
     int n;
+    int index;
     double p, c;
     boolean b = false;
     Plan R = null, L = null;
@@ -17,7 +18,7 @@ public class Record {
     }
     
     public String toString() {
-        return "Cost: = " + c + " with no-branching algorithm = " + b;
+        return "Set: " + terms + " Cost: = " + c + " with no-branching algorithm = " + b;
     }
     
     public void setCost(double c) {
