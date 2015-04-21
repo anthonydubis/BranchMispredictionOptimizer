@@ -1,0 +1,22 @@
+!SESSION 2015-04-21 07:20:15.004 -----------------------------------------------
+eclipse.buildId=4.3.0.I20130605-2000
+java.version=1.7.0_60-ea
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -keyring /Users/anthonydubis/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -keyring /Users/anthonydubis/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2015-04-21 07:20:39.927
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY com.amazonaws.eclipse.core 1 0 2015-04-21 07:20:46.140
+!MESSAGE Starting the AWS toolkit core plugin...
+
+!ENTRY com.amazonaws.eclipse.core 1 0 2015-04-21 07:20:48.334
+!MESSAGE No profile found: default
+
+!ENTRY com.amazonaws.eclipse.core 1 0 2015-04-21 07:20:48.337
+!MESSAGE No profile found: default(1)
+
+!ENTRY com.amazonaws.eclipse.core 1 0 2015-04-21 07:20:48.345
+!MESSAGE AWS toolkit core plugin initialized after 2205 milliseconds.
