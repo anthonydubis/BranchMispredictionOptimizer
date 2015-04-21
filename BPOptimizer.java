@@ -84,11 +84,81 @@ public class BPOptimizer {
     private void considerBranchingAndPlans(Record[] subsets) {
         for (int i = 1; i < subsets.length; i++) {
             for (int j = 1; j < subsets.length; j++) {
-                if ((i & j) == 0) {
-                    // No intersection
+                if ((i & j) == 0) { // Empty intersection
+                    Record right = subsets[i];
+                    Record left = subsets[j];
+                    if (isLeftCMetricDominatedByRight(left, right)) {
+                        System.out.println("c-metric condition holds - do nothing.");
+                    } else if (left.p <= 0.5 && isLeftDMetricDominatedBySomeAndTermInRight(subsets, left, right)) {
+                        System.out.println("d-metric condition holds - do nothing.");
+                    } else {
+                        System.out.println("Found a new optimal plan");
+                        double cost = computeCostOfCombinedPlan(left, right);
+                        Record combinedPlan = subsets[i + j];
+                        if (cost < combinedPlan.c) {
+                            combinedPlan.c = cost;
+                            combinedPlan.L = left;
+                            combinedPlan.R = right;
+                        }
+                    }
                 }
             }
         }
+    }
+    
+    /*
+     * Stage 2 - First condition based on c-metric
+     */
+    private boolean isLeftCMetricDominatedByRight(Record left, Record right) {
+// WARNING: I assume that if right has no left child we should use right itself (as it would be the left-most &-term)
+        if (right.L != null) {
+            right = right.L;
+        }
+        double leftFCost = getFCost(left.n);
+        double rightFCost = getFCost(right.n);
+        double p1 = left.p;
+        double p2 = right.p;
+     
+        if ((p2 <= p1) 
+                && (((p2 - 1) / rightFCost) < ((p1 - 1) / leftFCost)))
+            return false;
+        else 
+            return true;
+    }
+    
+    /*
+     * Stage 2 - Second condition based on d-metric
+     */
+    private boolean isLeftDMetricDominatedBySomeAndTermInRight(Record[] subsets, Record left, Record right) {
+        boolean isDominated = false;
+        double p1 = left.p;
+        double leftFCost = getFCost(left.n);
+// Warning - should we also compare to the same and term compared in the cMetric condition?
+        while (right.R != null) {
+            right = right.R;
+            Record andTerm = right.L;
+            if (andTerm == null) 
+                continue;
+            
+            double p2 = andTerm.p;
+            double rightFCost = getFCost(andTerm.n);
+            
+            if (!((p2 < p1) && (rightFCost < leftFCost))) {
+                isDominated = true;
+            }
+        }
+        return isDominated;
+    }
+    
+    /*
+     * Stage 3 - Compute cost of combined plan in third condition
+     */
+    private double computeCostOfCombinedPlan(Record left, Record right) {
+        double cost = getFCost(left.n);
+        double q = Math.min(left.p, 1 - left.p);
+        cost += (m * q);
+        cost += (left.p * computeBranchingAndCost(right.selectivities));
+        return cost;
     }
     
     /************************ Read in the Property Values ********************/
@@ -140,19 +210,26 @@ public class BPOptimizer {
     /*
      * Following Example 4.6
      */
-    private double computeBranchingAndCost(Double[] pValues){
-        int k = pValues.length;
+    private double computeBranchingAndCost(ArrayList<Double> pValues){
+        int k = pValues.size();
         return computeBranchingAndCost(0, k-1, pValues);
     }
     
     /*
      * Following recursive formula for Example 4.6
      */
-    private double computeBranchingAndCost(int n, int k, Double[] pValues) {
+    private double computeBranchingAndCost(int n, int k, ArrayList<Double> pValues) {
         if (n == k) return a;
         
-        double q = pValues[n] <= 0.5 ? (pValues[n]) : (1-pValues[n]);
-        return r + t + f + (m * q) + (pValues[n] * computeBranchingAndCost(n+1, k, pValues));
+        double q = pValues.get(n) <= 0.5 ? (pValues.get(n)) : (1-pValues.get(n));
+        return r + t + f + (m * q) + (pValues.get(n) * computeBranchingAndCost(n+1, k, pValues));
+    }
+    
+    /*
+     * Fcost
+     */
+    private double getFCost(int k) {
+        return k * r + (k - 1) * l + k * f + t; 
     }
 
     public static void main(String[] args) throws IOException {
