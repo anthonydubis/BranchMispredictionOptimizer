@@ -28,16 +28,16 @@ public class BPOptimizer {
      * This function outputs the optimized plan and its cost given the selectivities to standard out
      */
     private void outputPlan(Double[] pValues,Record[] A){
-        System.out.println("==================================================================");
+        System.out.println("============================================================================");
         for(int i=0;i<pValues.length;i++)
             System.out.print(pValues[i]+" ");
-        
-        System.out.println("\n----------------------------------------------------------------");
+        System.out.println();
+        System.out.println("----------------------------------------------------------------------------");
         Record last = A[A.length-1];
         String result = "if (" + produceOptimalPlan(last);
         result = handleNoBranchingCase(result);
         System.out.println(result);
-        System.out.println("------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------");
         System.out.println("cost: " + last.c);
     }
     
