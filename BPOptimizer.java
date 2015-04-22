@@ -32,7 +32,7 @@ public class BPOptimizer {
         for(int i=0;i<pValues.length;i++)
             System.out.print(pValues[i]+" ");
         
-        System.out.println("\n------------------------------------------------------------------");
+        System.out.println("\n----------------------------------------------------------------");
         Record last = A[A.length-1];
         String result = "if (" + produceOptimalPlan(last);
         result = handleNoBranchingCase(result);
