@@ -21,18 +21,29 @@ public class BPOptimizer {
         
         considerLogicalAndNoBranchingPlans(A);
         considerBranchingAndPlans(A);
-        produceOptimalPlan(A);
+        String cCode = produceOptimalPlan(A);
+        outputResults(pValues, cCode, A[A.length-1]);
+    }
+    
+    private void outputResults(Double[] pValues, String cCode, Record record) {
+        System.out.println("=====================================================================");
+        for (int i = 0; i < pValues.length; i++) {
+            System.out.print(pValues[i] + " ");
+        }
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------");
+        System.out.println(cCode);
+        System.out.println("---------------------------------------------------------------------");
+        System.out.println("Cost: " + record.c);
     }
     
     /*
      * Produce the optimal plan as c-code
      */
-    private void produceOptimalPlan(Record[] A) {
+    private String produceOptimalPlan(Record[] A) {
         Record last = A[A.length-1];
         String plan = produceOptimalPlan(last);
-        System.out.println(plan);
-        String cSnippet = produceCSnippet(plan);
-        System.out.println(cSnippet);
+        return produceCSnippet(plan);
     }
     
     private String produceCSnippet(String plan) {
