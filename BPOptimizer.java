@@ -202,7 +202,7 @@ public class BPOptimizer {
         double cost = getFCost(left.n);
         double q = Math.min(left.p, 1 - left.p);
         cost += (m * q);
-        cost += (left.p * computeBranchingAndCost(right.selectivities));
+        cost += (left.p * right.c);
         return cost;
     }
     
