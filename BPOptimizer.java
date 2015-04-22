@@ -21,7 +21,15 @@ public class BPOptimizer {
         
         considerLogicalAndNoBranchingPlans(A);
         considerBranchingAndPlans(A);
-        System.out.println(A[A.length-1]);
+        produceOptimalPlan(A);
+    }
+    
+    /*
+     * Produce the optimal plan as c-code
+     */
+    private void produceOptimalPlan(Record[] A) {
+        Record curr = A[A.length-1];
+        System.out.println(curr.c);
     }
     
     /*
@@ -88,11 +96,11 @@ public class BPOptimizer {
                     Record right = subsets[i];
                     Record left = subsets[j];
                     if (isLeftCMetricDominatedByRight(left, right)) {
-                        System.out.println("c-metric condition holds - do nothing.");
-                    } else if (left.p <= 0.5 && isLeftDMetricDominatedBySomeAndTermInRight(subsets, left, right)) {
-                        System.out.println("d-metric condition holds - do nothing.");
+                        // System.out.println("c-metric condition executed - do nothing.");
+                    } else if (left.p <= 0.5 && isLeftDMetricDominatedBySomeAndTermInRight(left, right)) {
+                        System.out.println("d-metric condition executed - do nothing.");
                     } else {
-                        System.out.println("Found a new optimal plan");
+                        // System.out.println("Found a new optimal plan");
                         double cost = computeCostOfCombinedPlan(left, right);
                         Record combinedPlan = subsets[i + j];
                         if (cost < combinedPlan.c) {
@@ -121,15 +129,16 @@ public class BPOptimizer {
      
         if ((p2 <= p1) 
                 && (((p2 - 1) / rightFCost) < ((p1 - 1) / leftFCost)))
-            return false;
-        else 
             return true;
+        else 
+            return false;
     }
     
     /*
      * Stage 2 - Second condition based on d-metric
      */
-    private boolean isLeftDMetricDominatedBySomeAndTermInRight(Record[] subsets, Record left, Record right) {
+    private boolean isLeftDMetricDominatedBySomeAndTermInRight(Record left, Record right) {
+        // System.out.println("Testing second condition");
         boolean isDominated = false;
         double p1 = left.p;
         double leftFCost = getFCost(left.n);
@@ -143,7 +152,10 @@ public class BPOptimizer {
             double p2 = andTerm.p;
             double rightFCost = getFCost(andTerm.n);
             
-            if (!((p2 < p1) && (rightFCost < leftFCost))) {
+            // System.out.println("Right d-metric (" + p2 + ", " + rightFCost + ") and left d-metric (" + p1 + ", " + leftFCost + ")");
+            
+            // Is this the right condition? 
+            if ((p2 < p1) && (rightFCost < leftFCost)) {
                 isDominated = true;
             }
         }
