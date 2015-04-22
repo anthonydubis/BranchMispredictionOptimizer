@@ -12,7 +12,6 @@ public class BPOptimizer {
     private int f;
     
     
-    /*
     private void findOptimalPlan(Double[] pValues) {
         int[] S = getBasicTerms(pValues);
         Record[] A = createSubsetsOfTerms(S, pValues);
@@ -23,120 +22,50 @@ public class BPOptimizer {
     }
     
     private void outputPlan(Double[] pValues,Record[] A){
-    	System.out.println("==================================================================");
-    	for(int i=0;i<pValues.length;i++)
-    		System.out.print(pValues[i]+" ");
-  
-    	System.out.println("\n------------------------------------------------------------------");
-    	Record last = A[A.length-1];
-    	String result = "if(" + produceOptimalPlan(last);
-    	System.out.println(result);
-    	System.out.println("------------------------------------------------------------------");
-    	System.out.println(last.c);
-    	System.out.println("==================================================================");
+        System.out.println("==================================================================");
+        for(int i=0;i<pValues.length;i++)
+            System.out.print(pValues[i]+" ");
+        
+        System.out.println("\n------------------------------------------------------------------");
+        Record last = A[A.length-1];
+        String result = "if (" + produceOptimalPlan(last);
+        result = handleNoBranchingCase(result);
+        System.out.println(result);
+        System.out.println("------------------------------------------------------------------");
+        System.out.println(last.c);
+        System.out.println("==================================================================");
     }
     
+    private String handleNoBranchingCase(String result) {
+        if (result.indexOf("()") < 0) return result;
+        int start = result.indexOf("{");
+        int end = result.indexOf("}");
+        return result.substring(start+1, end);
+    }
     
     private String produceOptimalPlan(Record record) {
         if (record == null) return "";
         
         // No children
         if (record.L == null && record.R == null) {
-        	if(record.b){
-        		return "){\n \t answer[j] = i;" +
-        				"\n \t j+= "+ andTermForRecord(record)+"\n}";
-        	}
-        	else{
-        		return andTermForRecord(record)+ "){" +
-        				"\n \t answer[j++] = i;\n}";
-        	}
+            if(record.b){
+                return ") {\n    answer[j] = i;" +
+                    "\n    j+= "+ andTermForRecord(record)+"\n}";
+            }
+            else{
+                return andTermForRecord(record)+ "){" +
+                    "\n    answer[j++] = i;\n}";
+            }
         }
         
         String result = andTermForRecord(record.L);
         if(record.R.L == null && record.R.R == null){
-        	//last term - treat it differently
-        	result += produceOptimalPlan(record.R);
+            //last term - treat it differently
+            result += produceOptimalPlan(record.R);
         }
         else
-        	result += " && " + produceOptimalPlan(record.R);
+            result += " && " + produceOptimalPlan(record.R);
         
-        return result;
-    }
-    */
-    
-    /*
-     * Find the optimal plan for given values of p (for function f1 through fn)
-     * Output C-snippet
-     */
-    private void findOptimalPlan(Double[] pValues) {
-        int[] S = getBasicTerms(pValues);
-        Record[] A = createSubsetsOfTerms(S, pValues);
-        
-        considerLogicalAndNoBranchingPlans(A);
-        considerBranchingAndPlans(A);
-        String cCode = produceOptimalPlan(A);
-        outputResults(pValues, cCode, A[A.length-1]);
-    }
-    
-    private void outputResults(Double[] pValues, String cCode, Record record) {
-        System.out.println("=====================================================================");
-        for (int i = 0; i < pValues.length; i++) {
-            System.out.print(pValues[i] + " ");
-        }
-        System.out.println();
-        System.out.println("---------------------------------------------------------------------");
-        System.out.println(cCode);
-        System.out.println("---------------------------------------------------------------------");
-        System.out.println("Cost: " + record.c);
-    }
-    
-    /*
-     * Produce the optimal plan as c-code
-     */
-    private String produceOptimalPlan(Record[] A) {
-        Record last = A[A.length-1];
-        String plan = produceOptimalPlan(last);
-        return produceCSnippet(plan);
-    }
-    
-    private String produceCSnippet(String plan) {
-        if (plan.indexOf(":") == -1) 
-            return allBranchingSnippet(plan);
-        else
-            return noBranchingSnippet(plan);
-    }
-    
-    private String allBranchingSnippet(String plan) {
-        String result = "if " + plan + " {\n";
-        result = result + "answer[j++] = i;\n";
-        result = result + "}";
-        return result;
-    }
-    
-    private String noBranchingSnippet(String plan) {
-        int start = plan.indexOf(":");
-        int end = plan.indexOf(":", start+1);
-        String noBranch = plan.substring(start+1, end);
-        
-        String result = "if " + plan.substring(0, start-4) + plan.substring(end+1) + " {\n";
-        result = result + "\tanswer[j] = i;\n";
-        result = result + "\tj += " + noBranch + ";\n";
-        result = result + "}";
-        return result;
-    }
-    
-    private String produceOptimalPlan(Record record) {
-        if (record == null) return "";
-        
-        // Last (right-most) &-term
-        if (record.L == null && record.R == null) {
-            if (record.b == true)
-                return ":" + andTermForRecord(record) + ":";
-            else 
-                return andTermForRecord(record);
-        }
-        
-        String result = "(" + andTermForRecord(record.L) + " && " + produceOptimalPlan(record.R) + ")";
         return result;
     }
     
