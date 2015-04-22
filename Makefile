@@ -5,7 +5,9 @@ JC = javac
 .java.class:
 	$(JC) $(JFLAGS) $*.java
 
-CLASSES = BPOptimizer.java
+CLASSES = \
+	  BPOptimizer.java \
+	  Record.java
 
 default: classes
 
