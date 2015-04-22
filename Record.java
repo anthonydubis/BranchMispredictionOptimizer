@@ -18,7 +18,7 @@ public class Record {
     }
     
     public String toString() {
-        return "Set: " + terms + " Cost: = " + c + " with no-branching algorithm = " + b;
+        return "Set: " + terms + " Cost: = " + c + " with no-branching algorithm = " + b + " Left " + L + " Right " + R;
     }
     
     private void setPForSelectivities(ArrayList<Double> selectivities) {

@@ -21,6 +21,7 @@ public class BPOptimizer {
         
         considerLogicalAndNoBranchingPlans(A);
         considerBranchingAndPlans(A);
+        System.out.println(A[A.length-1]);
     }
     
     /*
@@ -68,7 +69,6 @@ public class BPOptimizer {
             Record subset = subsets[i];
             double logicalAndCost = computeLogicalAndCost(subset.selectivities);
             double noBranchCost = computeNoBranchCost(subset.n);
-            System.out.println("LogicalAndCost: " + logicalAndCost + " NoBranchCost: " + noBranchCost);
             if (logicalAndCost < noBranchCost) {
                 subset.c = logicalAndCost;
             } else {
