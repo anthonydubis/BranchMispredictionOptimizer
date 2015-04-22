@@ -32,8 +32,7 @@ public class BPOptimizer {
         result = handleNoBranchingCase(result);
         System.out.println(result);
         System.out.println("------------------------------------------------------------------");
-        System.out.println(last.c);
-        System.out.println("==================================================================");
+        System.out.println("cost: " + last.c);
     }
     
     private String handleNoBranchingCase(String result) {
@@ -50,7 +49,7 @@ public class BPOptimizer {
         if (record.L == null && record.R == null) {
             if(record.b){
                 return ") {\n    answer[j] = i;" +
-                    "\n    j+= "+ andTermForRecord(record)+"\n}";
+                    "\n    j+= "+ andTermForRecord(record)+";\n}";
             }
             else{
                 return andTermForRecord(record)+ "){" +
