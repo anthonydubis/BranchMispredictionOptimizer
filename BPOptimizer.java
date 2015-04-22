@@ -31,14 +31,45 @@ public class BPOptimizer {
         Record last = A[A.length-1];
         String plan = produceOptimalPlan(last);
         System.out.println(plan);
+        String cSnippet = produceCSnippet(plan);
+        System.out.println(cSnippet);
+    }
+    
+    private String produceCSnippet(String plan) {
+        if (plan.indexOf(":") == -1) 
+            return allBranchingSnippet(plan);
+        else
+            return noBranchingSnippet(plan);
+    }
+    
+    private String allBranchingSnippet(String plan) {
+        String result = "if " + plan + " {\n";
+        result = result + "answer[j++] = i;\n";
+        result = result + "}";
+        return result;
+    }
+    
+    private String noBranchingSnippet(String plan) {
+        int start = plan.indexOf(":");
+        int end = plan.indexOf(":", start+1);
+        String noBranch = plan.substring(start+1, end);
+        
+        String result = "if " + plan.substring(0, start-4) + plan.substring(end+1) + " {\n";
+        result = result + "\tanswer[j] = i;\n";
+        result = result + "\tj += " + noBranch + ";\n";
+        result = result + "}";
+        return result;
     }
     
     private String produceOptimalPlan(Record record) {
         if (record == null) return "";
         
-        // No children
+        // Last (right-most) &-term
         if (record.L == null && record.R == null) {
-            return andTermForRecord(record);
+            if (record.b == true)
+                return ":" + andTermForRecord(record) + ":";
+            else 
+                return andTermForRecord(record);
         }
         
         String result = "(" + andTermForRecord(record.L) + " && " + produceOptimalPlan(record.R) + ")";
@@ -52,17 +83,33 @@ public class BPOptimizer {
             result = "(";
         
         for (int i = 0; i < record.n; i++) {
-            Integer func = record.terms.get(i);
+            Integer func = record.terms.get(i) + 1;
             if (i == 0)
-                result = result + func;
+                result = result + snippetTermForFunctionNumber(func);
             else
-                result = result + " & " + func;
+                result = result + " & " + snippetTermForFunctionNumber(func);
         }
         
         if (record.n > 1) 
             result = result + ")";
         
         return result;
+    }
+    
+    private String noBranchTermForRecord(Record record) {
+        if (record == null) return "NULL pass to NoBranch";
+        String result = ":";
+        for (int i = 0; i < record.n; i++) {
+            if (i > 0) result = result + ",";
+            
+            result = result + (record.terms.get(i) + 1);
+        }
+        result = result + ":";
+        return result;
+    }
+    
+    private String snippetTermForFunctionNumber(int i) {
+        return "t" + i + "[o" + i + "[i]]";
     }
     
     /*
