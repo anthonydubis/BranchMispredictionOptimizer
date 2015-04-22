@@ -17,7 +17,57 @@ public class Optimizer {
     private int m;
     private int a;
     private int f;
+    /*
+    private void findOptimalPlan(Double[] pValues) {
+        int[] S = getBasicTerms(pValues);
+        Record[] A = createSubsetsOfTerms(S, pValues);
+        
+        considerLogicalAndNoBranchingPlans(A);
+        considerBranchingAndPlans(A);
+        outputPlan(pValues,A);
+    }
     
+    private void outputPlan(Double[] pValues,Record[] A){
+    	System.out.println("==================================================================");
+    	for(int i=0;i<pValues.length;i++)
+    		System.out.print(pValues[i]+" ");
+  
+    	System.out.println("\n------------------------------------------------------------------");
+    	Record last = A[A.length-1];
+    	String result = "if(" + produceOptimalPlan(last);
+    	System.out.println(result);
+    	System.out.println("------------------------------------------------------------------");
+    	System.out.println(last.c);
+    	System.out.println("==================================================================");
+    }
+    
+    
+    private String produceOptimalPlan(Record record) {
+        if (record == null) return "";
+        
+        // No children
+        if (record.L == null && record.R == null) {
+        	if(record.b){
+        		return "){\n \t answer[j] = i;" +
+        				"\n \t j+= "+ andTermForRecord(record)+"\n}";
+        	}
+        	else{
+        		return andTermForRecord(record)+ "){" +
+        				"\n \t answer[j++] = i;\n}";
+        	}
+        }
+        
+        String result = andTermForRecord(record.L);
+        if(record.R.L == null && record.R.R == null){
+        	//last term - treat it differently
+        	result += produceOptimalPlan(record.R);
+        }
+        else
+        	result += " && " + produceOptimalPlan(record.R);
+        
+        return result;
+    }
+    */
 
     /*
      * Read the cost values from the config.txt file into our instance
