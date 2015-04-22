@@ -11,7 +11,10 @@ public class BPOptimizer {
     private int a;
     private int f;
     
-    
+    /*
+     * This function is called for each line of selectivities read from the file.
+     * It calls other functions to determine and then output the plan and cost.
+     */
     private void findOptimalPlan(Double[] pValues) {
         int[] S = getBasicTerms(pValues);
         Record[] A = createSubsetsOfTerms(S, pValues);
@@ -21,6 +24,9 @@ public class BPOptimizer {
         outputPlan(pValues,A);
     }
     
+    /*
+     * This function outputs the optimized plan and its cost given the selectivities to standard out
+     */
     private void outputPlan(Double[] pValues,Record[] A){
         System.out.println("==================================================================");
         for(int i=0;i<pValues.length;i++)
@@ -35,6 +41,9 @@ public class BPOptimizer {
         System.out.println("cost: " + last.c);
     }
     
+    /*
+     * In the event that all terms are optimized to a no-branching plan, remove the surrounding if-statement
+     */
     private String handleNoBranchingCase(String result) {
         if (result.indexOf("()") < 0) return result;
         int start = result.indexOf("{");
@@ -42,6 +51,11 @@ public class BPOptimizer {
         return result.substring(start+1, end);
     }
     
+    /*
+     * This recursive function assembles the c-code for a particlar plan.
+     * It is initially called by "outputPlan" with the last Record of A[],
+     * which can be thought of as the parent node of the binary tree.
+     */
     private String produceOptimalPlan(Record record) {
         if (record == null) return "";
         
@@ -68,6 +82,9 @@ public class BPOptimizer {
         return result;
     }
     
+    /*
+     * This creates the &-term for a given Record and its terms
+     */
     private String andTermForRecord(Record record) {
         if (record == null) return "NULL left point";
         String result = "";
@@ -88,18 +105,9 @@ public class BPOptimizer {
         return result;
     }
     
-    private String noBranchTermForRecord(Record record) {
-        if (record == null) return "NULL pass to NoBranch";
-        String result = ":";
-        for (int i = 0; i < record.n; i++) {
-            if (i > 0) result = result + ",";
-            
-            result = result + (record.terms.get(i) + 1);
-        }
-        result = result + ":";
-        return result;
-    }
-    
+    /*
+     * This returns the surround snippet for a given function number (tf[of[i]])
+     */
     private String snippetTermForFunctionNumber(int i) {
         return "t" + i + "[o" + i + "[i]]";
     }
@@ -159,7 +167,7 @@ public class BPOptimizer {
     }
     
     /*
-     * Stage 2 of the Algorithm
+     * Stage 2 of the Algorithm - consider branching and plans
      */
     private void considerBranchingAndPlans(Record[] subsets) {
         for (int i = 1; i < subsets.length; i++) {
@@ -190,15 +198,16 @@ public class BPOptimizer {
      * Stage 2 - First condition based on c-metric
      */
     private boolean isLeftCMetricDominatedByRight(Record left, Record right) {
-// WARNING: I assume that if right has no left child we should use right itself (as it would be the left-most &-term)
         if (right.L != null) {
             right = right.L;
         }
+        
         double leftFCost = getFCost(left.n);
         double rightFCost = getFCost(right.n);
         double p1 = left.p;
         double p2 = right.p;
      
+        // Test if right c-metric dominates left c-metric
         if ((p2 <= p1) 
                 && (((p2 - 1) / rightFCost) < ((p1 - 1) / leftFCost)))
             return true;
@@ -210,11 +219,10 @@ public class BPOptimizer {
      * Stage 2 - Second condition based on d-metric
      */
     private boolean isLeftDMetricDominatedBySomeAndTermInRight(Record left, Record right) {
-        // System.out.println("Testing second condition");
         boolean isDominated = false;
         double p1 = left.p;
         double leftFCost = getFCost(left.n);
-// Warning - should we also compare to the same and term compared in the cMetric condition?
+
         while (right.R != null) {
             right = right.R;
             Record andTerm = right.L;
@@ -224,9 +232,7 @@ public class BPOptimizer {
             double p2 = andTerm.p;
             double rightFCost = getFCost(andTerm.n);
             
-            // System.out.println("Right d-metric (" + p2 + ", " + rightFCost + ") and left d-metric (" + p1 + ", " + leftFCost + ")");
-            
-            // Is this the right condition? 
+            // Check if d-metric in right &-term dominates d-metric of left
             if ((p2 < p1) && (rightFCost < leftFCost)) {
                 isDominated = true;
                 break;
@@ -293,30 +299,17 @@ public class BPOptimizer {
     }
     
     /*
-     * Following Example 4.6
-     */
-    private double computeBranchingAndCost(ArrayList<Double> pValues){
-        int k = pValues.size();
-        return computeBranchingAndCost(0, k-1, pValues);
-    }
-    
-    /*
-     * Following recursive formula for Example 4.6
-     */
-    private double computeBranchingAndCost(int n, int k, ArrayList<Double> pValues) {
-        if (n == k) return a;
-        
-        double q = pValues.get(n) <= 0.5 ? (pValues.get(n)) : (1-pValues.get(n));
-        return r + t + f + (m * q) + (pValues.get(n) * computeBranchingAndCost(n+1, k, pValues));
-    }
-    
-    /*
-     * Fcost
+     * Computing fcost by Definition 4.7
      */
     private double getFCost(int k) {
         return k * r + (k - 1) * l + k * f + t; 
     }
 
+    /*
+     * Kick-off point for the program
+     * Argument 0 is the query.txt file
+     * Argument 1 is the config.txt file
+     */
     public static void main(String[] args) throws IOException {
         BPOptimizer optimizer = new BPOptimizer();
         optimizer.getCostValues(args[1]);
@@ -325,12 +318,15 @@ public class BPOptimizer {
         try {
             BufferedReader br = new BufferedReader(new FileReader(args[0]));
             String line;
+            // For each line of selectivities
             while ((line = br.readLine()) != null) {
+                // Parse the selectivities
                 String[] splitLine = line.split(" ");
                 Double[] pValues = new Double[splitLine.length];
                 for (int i = 0; i < splitLine.length; i++) {
                     pValues[i] = Double.parseDouble(splitLine[i]);
                 }
+                // Have the optimizer find the optimal plan
                 optimizer.findOptimalPlan(pValues);
             }
         } catch (IOException e) {
