@@ -28,8 +28,41 @@ public class BPOptimizer {
      * Produce the optimal plan as c-code
      */
     private void produceOptimalPlan(Record[] A) {
-        Record curr = A[A.length-1];
-        System.out.println(curr.c);
+        Record last = A[A.length-1];
+        String plan = produceOptimalPlan(last);
+        System.out.println(plan);
+    }
+    
+    private String produceOptimalPlan(Record record) {
+        if (record == null) return "";
+        
+        // No children
+        if (record.L == null && record.R == null) {
+            return andTermForRecord(record);
+        }
+        
+        String result = "(" + andTermForRecord(record.L) + " && " + produceOptimalPlan(record.R) + ")";
+        return result;
+    }
+    
+    private String andTermForRecord(Record record) {
+        if (record == null) return "NULL left point";
+        String result = "";
+        if (record.n > 1)
+            result = "(";
+        
+        for (int i = 0; i < record.n; i++) {
+            Integer func = record.terms.get(i);
+            if (i == 0)
+                result = result + func;
+            else
+                result = result + " & " + func;
+        }
+        
+        if (record.n > 1) 
+            result = result + ")";
+        
+        return result;
     }
     
     /*
