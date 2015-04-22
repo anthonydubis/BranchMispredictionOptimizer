@@ -131,9 +131,9 @@ public class BPOptimizer {
                     if (isLeftCMetricDominatedByRight(left, right)) {
                         // System.out.println("c-metric condition executed - do nothing.");
                     } else if (left.p <= 0.5 && isLeftDMetricDominatedBySomeAndTermInRight(left, right)) {
-                        System.out.println("d-metric condition executed - do nothing.");
+                        // System.out.println("d-metric condition executed - do nothing.");
                     } else {
-                        // System.out.println("Found a new optimal plan");
+                        // Optimal plan for subset
                         double cost = computeCostOfCombinedPlan(left, right);
                         Record combinedPlan = subsets[i + j];
                         if (cost < combinedPlan.c) {
@@ -190,6 +190,7 @@ public class BPOptimizer {
             // Is this the right condition? 
             if ((p2 < p1) && (rightFCost < leftFCost)) {
                 isDominated = true;
+                break;
             }
         }
         return isDominated;
